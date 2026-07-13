@@ -336,7 +336,7 @@
                 // Show placeholder
                 (!serviceProp._dataPlaceholderVisible || serviceProp._dataWidget)
                     && addClass(serviceProp._div, SHOW_PLACEHOLDER_CLASS);
-            });
+            }, serviceProp._div);
 
             return;
         }
