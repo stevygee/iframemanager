@@ -18,6 +18,7 @@
      * @property {HTMLDivElement} _initialPlaceholderClone
      * @property {HTMLIFrameElement} _iframe
      * @property {HTMLDivElement} _backgroundDiv
+     * @property {HTMLElement} _clickedElement
      * @property {boolean} _hasIframe
      * @property {boolean} _hasNotice
      * @property {boolean} _showNotice
@@ -228,6 +229,7 @@
             _placeholderDiv: placeholderDiv,
             _initialPlaceholderClone: placeholderClone,
             _backgroundDiv: null,
+            _clickedElement: null,
             _hasIframe: false,
             _hasNotice: false,
             _showNotice: true,
@@ -336,7 +338,7 @@
                 // Show placeholder
                 (!serviceProp._dataPlaceholderVisible || serviceProp._dataWidget)
                     && addClass(serviceProp._div, SHOW_PLACEHOLDER_CLASS);
-            }, serviceProp._div);
+            }, serviceProp._clickedElement);
 
             return;
         }
@@ -523,7 +525,10 @@
                     load_button.textContent = loadBtnText;
                     setClassName(load_button, 'c-l-b');
 
-                    load_button.addEventListener(CLICK_EVENT_SOURCE, showVideo);
+                    load_button.addEventListener(CLICK_EVENT_SOURCE, (event) => {
+                        serviceProp._clickedElement = event.currentTarget;
+                        showVideo();
+                    });
                     appendChild(buttons, load_button);
                 }
 
@@ -532,7 +537,8 @@
                     load_all_button.textContent = loadAllBtnText;
                     setClassName(load_all_button, loadBtnText ? 'c-la-b' : 'c-l-b');
 
-                    load_all_button.addEventListener(CLICK_EVENT_SOURCE, () => {
+                    load_all_button.addEventListener(CLICK_EVENT_SOURCE, (event) => {
+                        serviceProp._clickedElement = event.currentTarget;
                         showVideo();
 
                         currentEventSource = CLICK_EVENT_SOURCE;
