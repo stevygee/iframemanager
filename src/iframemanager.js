@@ -581,7 +581,15 @@
                 }
 
                 appendChild(notice_text, fragment_2);
-                notice && notice_text.insertAdjacentHTML('beforeend', noticeText || '');
+
+                // Wrap noticeText in a span (similar to iframeTitle)
+                if (noticeText) {
+                    const notice_text_span = createNode('span');
+                    setClassName(notice_text_span, 'c-nt-t');
+                    notice_text_span.insertAdjacentHTML('beforeend', noticeText);
+                    appendChild(notice_text, notice_text_span);
+                }
+
                 appendChild(span, notice_text);
 
                 setClassName(notice_text_container, 'c-t-cn');
