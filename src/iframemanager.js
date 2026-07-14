@@ -24,6 +24,7 @@
      * @property {boolean} _showNotice
      * @property {boolean} _dataWidget
      * @property {boolean} _dataPlaceholderVisible
+     * @property {boolean} _isUserInitiated
      * @property {Object.<string, string>} _iframeAttributes
      */
 
@@ -237,6 +238,7 @@
             _showNotice: true,
             _dataWidget: 'widget' in dataset,
             _dataPlaceholderVisible: dataVisible,
+            _isUserInitiated: false,
             _iframeAttributes: iframeAttrs
         };
     };
@@ -529,6 +531,7 @@
 
                     load_button.addEventListener(CLICK_EVENT_SOURCE, (event) => {
                         serviceProp._clickedElement = event.currentTarget;
+                        serviceProp._isUserInitiated = true;
                         showVideo();
                     });
                     appendChild(buttons, load_button);
@@ -541,6 +544,7 @@
 
                     load_all_button.addEventListener(CLICK_EVENT_SOURCE, (event) => {
                         serviceProp._clickedElement = event.currentTarget;
+                        serviceProp._isUserInitiated = true;
                         showVideo();
 
                         currentEventSource = CLICK_EVENT_SOURCE;
@@ -663,6 +667,7 @@
     /**
      * Mark notices as accepted but not loaded for the specified service.
      * When noAutoLoad is true, iframes won't be automatically created.
+     * The accepted-not-loaded class is only added if the action was not user-initiated.
      *
      * @param {string} serviceName
      * @param {ServiceConfig} serviceConfig
@@ -672,7 +677,14 @@
 
         serviceProps.forEach((serviceProp) => {
             if (!serviceProp._hasIframe) {
-                addClass(serviceProp._div, ACCEPTED_NOT_LOADED_CLASS);
+                // If user initiated, call showVideo to load the iframe
+                if (serviceProp._isUserInitiated) {
+                    hideNotice(serviceProp);
+                    createIframe(serviceProp, serviceConfig);
+                } else {
+                    // Otherwise, mark as accepted but not loaded
+                    addClass(serviceProp._div, ACCEPTED_NOT_LOADED_CLASS);
+                }
             }
         });
     };
