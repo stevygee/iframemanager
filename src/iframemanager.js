@@ -61,6 +61,7 @@
      * @property {Object.<string, Language>} languages
      * @property {Function} [onAccept]
      * @property {Function} [onReject]
+     * @property {boolean} [noAutoLoad]
      */
 
     const API_EVENT_SOURCE = 'api';
@@ -72,6 +73,7 @@
     const HIDE_NOTICE_CLASS = 'c-h-n';
     const HIDE_LOADER_CLASS = 'c-h-b';
     const SHOW_PLACEHOLDER_CLASS = 'show-ph';
+    const ACCEPTED_NOT_LOADED_CLASS = 'accepted-not-loaded';
 
     let
 
@@ -658,6 +660,23 @@
         });
     };
 
+    /**
+     * Mark notices as accepted but not loaded for the specified service.
+     * When noAutoLoad is true, iframes won't be automatically created.
+     *
+     * @param {string} serviceName
+     * @param {ServiceConfig} serviceConfig
+     */
+    const modifiedAllNotices = (serviceName, serviceConfig) => {
+        const serviceProps = allServiceProps[serviceName];
+
+        serviceProps.forEach((serviceProp) => {
+            if (!serviceProp._hasIframe) {
+                addClass(serviceProp._div, ACCEPTED_NOT_LOADED_CLASS);
+            }
+        });
+    };
+
 
     /**
      * Show notices for the specified service
@@ -716,7 +735,12 @@
             setCookie(cookie);
         }
 
-        hideAllNotices(serviceName, serviceConfig);
+        // Check if noAutoLoad is enabled
+        if (serviceConfig.noAutoLoad) {
+            modifiedAllNotices(serviceName, serviceConfig);
+        } else {
+            hideAllNotices(serviceName, serviceConfig);
+        }
     };
 
     /**
@@ -994,7 +1018,13 @@
                 // if cookie is not set => show notice
                 if (cookieExists) {
                     createAllNotices(serviceName, currService, true);
-                    hideAllNotices(serviceName, currService);
+                    
+                    // Check if noAutoLoad is enabled
+                    if (currService.noAutoLoad) {
+                        modifiedAllNotices(serviceName, currService);
+                    } else {
+                        hideAllNotices(serviceName, currService);
+                    }
                 } else {
                     createAllNotices(serviceName, currService, false);
                 }
